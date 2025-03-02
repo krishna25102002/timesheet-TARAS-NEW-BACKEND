@@ -42,7 +42,7 @@ async function login(req, res) {
       },
       process.env.JWT_SECRET,
       { expiresIn: "4h" }
-    );
+    ); 
     return res.json({
       token,
       employeeId: mysqlUser.employeeId,
