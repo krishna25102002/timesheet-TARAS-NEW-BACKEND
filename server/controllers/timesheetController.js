@@ -1,8 +1,5 @@
 const User = require("../models/User");
-const {
-  sendApprovalEmail,
-  sendApprovalStatusNotification,
-} = require("./emailController");
+const { sendEmail } = require("../utils/common");
 
 async function submitTimesheet(req, res) {
   const { employeeId, timesheetData } = req.body;
@@ -22,7 +19,16 @@ async function submitTimesheet(req, res) {
     submittedAt: new Date(),
   });
 
-  await sendApprovalEmail(employee.managerEmail, employeeId, result.insertedId);
+  await sendEmail({
+    from: '"Timesheet Portal" <no-reply@example.com>',
+    to: employee.managerEmail,
+    subject: "Timesheet Approval Request",
+    html: `<p>Employee ID: ${employeeId} has submitted their timesheet for approval.</p>
+           <p>Click below to approve or reject the timesheet:</p>
+           <a href="http://your-application-url/email/approve-timesheet?employeeId=${employeeId}&timesheetId=${result.insertedId}" style="margin-right: 10px; padding: 10px; background-color: green; color: white; text-decoration: none;">Accept</a>
+           <a href="http://your-application-url/email/reject-timesheet?employeeId=${employeeId}&timesheetId=${result.insertedId}" style="margin-left: 10px; padding: 10px; background-color: red; color: white; text-decoration: none;">Reject</a>`,
+  });
+
   res.json({ message: "Timesheet submitted successfully" });
 }
 
@@ -48,13 +54,17 @@ async function approveTimesheet(req, res) {
     { $set: { approvalStatus: "Approved", approvedAt: new Date() } }
   );
 
-  await sendApprovalStatusNotification(
-    employee.email,
-    employee.managerEmail,
-    employee.hierarchyManagerEmail,
-    timesheet.timesheetData,
-    "Approved"
-  );
+  await sendEmail({
+    from: '"Timesheet Portal" <no-reply@example.com>',
+    to: [employee.email, employee.managerEmail, employee.hierarchyManagerEmail],
+    subject: `Timesheet Approved`,
+    text: `The timesheet has been approved by the manager.\n\nTimesheet Data:\n${JSON.stringify(
+      timesheet.timesheetData,
+      null,
+      2
+    )}`,
+  });
+
   res.json({ message: "Timesheet approved successfully" });
 }
 

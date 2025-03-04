@@ -1,17 +1,15 @@
-const mongoose = require('mongoose');
-const mysql = require('mysql2/promise');
+const { Sequelize } = require("sequelize");
+require("dotenv").config();
 
-// MongoDB connection
-async function connectMongoDB() {
-    await mongoose.connect('YOUR_MONGODB_CONNECTION_URI', { useNewUrlParser: true, useUnifiedTopology: true });
-    console.log('Connected to MongoDB');
-}
+// MySQL Connection
+const sequelize = new Sequelize(
+  process.env.MYSQL_DATABASE,
+  process.env.MYSQL_USER,
+  process.env.MYSQL_PASSWORD,
+  {
+    host: process.env.MYSQL_HOST,
+    dialect: "mysql",
+  }
+);
 
-// MySQL connection
-async function connectMySQL() {
-    const connection = await mysql.createConnection({ host: 'localhost', user: 'root', password: 'password', database: 'employees' });
-    console.log('Connected to MySQL');
-    return connection;
-}
-
-module.exports = { connectMongoDB, connectMySQL };
+module.exports = { sequelize };
