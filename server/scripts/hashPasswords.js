@@ -5,13 +5,21 @@ require("dotenv").config();
 async function hashPasswords() {
   const users = [
     {
-      employeeId: "e002",
+      employeeId: "e004",
       email: "bff@example.com",
       password: "hello", // Plain text password
       role: "gs",
       managerEmail: "gdsf@example.com",
       hierarchyManagerEmail: "fggs@example.com",
     },
+    {
+        employeeId: "e003",
+        email: "bff@example.com",
+        password: "hello123", // Plain text password
+        role: "gs",
+        managerEmail: "gdsf@example.com",
+        hierarchyManagerEmail: "fggs@example.com",
+      },
     // Add more users as needed
   ];
 
